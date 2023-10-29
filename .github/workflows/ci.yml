@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the Docker image
+        run: |
+              docker build . --tag ghcr.io/ntxinh/docker-podman-practical:latest
+              docker run ghcr.io/ntxinh/docker-podman-practical:latest
+              docker push ghcr.io/ntxinh/docker-podman-practical:latest
